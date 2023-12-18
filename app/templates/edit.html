@@ -1,0 +1,46 @@
+<!-- app/templates/edit.html -->
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Страница редактирования</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1>Страница редактирования</h1>
+        <!-- Форма редактирования -->
+        <form>
+            <div class="form-group">
+                <label for="type">Тип выписки</label>
+                <input type="text" class="form-control" id="type" placeholder="Текущий тип выписки" value="{{ request_type }}" readonly>
+            </div>
+            <div class="form-group">
+                <label for="author">Автор</label>
+                <input type="text" class="form-control" id="author" placeholder="Текущий автор" value="{{ author }}" readonly>
+            </div>
+            <div class="form-group">
+                <label for="deadline">Дата истечения дедлайна</label>
+                <input type="date" class="form-control" id="deadline" value="{{ deadline_date }}" required>
+            </div>
+            <div class="form-group">
+                <label for="status">Статус</label>
+                <select class="form-control" id="status" required>
+                    <option value="Отправлена" {% if status == 'Отправлена' %}selected{% endif %}>Отправлена</option>
+                    <option value="Принята" {% if status == 'Принята' %}selected{% endif %}>Принята</option>
+                    <option value="Выполнена" {% if status == 'Выполнена' %}selected{% endif %}>Выполнена</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="description">Описание</label>
+                <textarea class="form-control" id="description" rows="4" placeholder="Введите описание">{{ description }}</textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+        </form>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

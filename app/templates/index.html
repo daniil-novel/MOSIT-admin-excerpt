@@ -1,0 +1,60 @@
+<!-- app/templates/index.html -->
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Управление Заявками</title>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+  </head>
+  <body>
+    <div class="container mt-4">
+      <h1>Управление Заявками</h1>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Тип</th>
+            <th>Автор</th>
+            <th>Дата Истечения Дедлайна</th>
+            <th>Статус</th>
+            <th>Действия</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for request in requests %}
+          <tr>
+            <td>{{ request.request_type }}</td>
+            <td>{{ request.author }}</td>
+            <td>{{ request.deadline_date }}</td>
+            <td>{{ request.status }}</td>
+            <td>
+              <a
+                href="{{ url_for('edit', 
+                                  request_type=request.request_type, 
+                                  author=request.author, 
+                                  deadline_date=request.deadline_date, 
+                                  status=request.status, 
+                                  description=request.description) }}"
+                class="btn btn-secondary btn-sm"
+              >
+                <img
+                  src="//cdn.iconscout.com/icon/free/png-512/free-edit-1439765-1214336.png?f=webp&w=256"
+                  alt="Edit"
+                  width="10px"
+                  height="10px"
+                />
+              </a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <a href="{{ url_for('create') }}" class="btn btn-primary"
+        >Создать Заявку</a
+      >
+    </div>
+  </body>
+</html>
