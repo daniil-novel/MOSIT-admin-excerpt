@@ -3,6 +3,7 @@ from flask import render_template, request, redirect, url_for
 from app import app, db
 from app.models import Request
 
+
 @app.route('/')
 def index():
     requests = Request.query.all()
@@ -11,20 +12,19 @@ def index():
 @app.route('/create', methods=['GET', 'POST'])
 def create():
     if request.method == 'POST':
-        request_type = request.form['type']
+        request_type = request.form['request_type']
         author = request.form['author']
-        deadline_date = request.form['deadline']
+        deadline_date = request.form['deadline_date']
         status = request.form['status']
-        description = request.form['description']
+        description = request.form['description']  
 
         new_request = Request(
             request_type=request_type,
             author=author,
             deadline_date=deadline_date,
             status=status,
-            description=description
+            description=description 
         )
-
         db.session.add(new_request)
         db.session.commit()
 

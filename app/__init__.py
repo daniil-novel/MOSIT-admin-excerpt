@@ -1,11 +1,24 @@
 # app/__init__.py
-from flask import Flask, redirect, render_template, request, url_for
+from flask import Flask, render_template, redirect, url_for, request
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'  # Имя файла базы данных SQLite
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'  # Используйте свой URI для базы данных
 db = SQLAlchemy(app)
 
+# Модель для базы данных
+class Request(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    request_type = db.Column(db.String(50), nullable=False)
+    author = db.Column(db.String(50), nullable=False)
+    deadline_date = db.Column(db.String(10), nullable=False)
+    status = db.Column(db.String(20), nullable=False)
+    description = db.Column(db.Text, nullable=True)  # Добавлено поле для описания
+
+# Добавим вывод в консоль при создании базы данных
+with app.app_context():
+    db.create_all()
+    print("База данных успешно создана!")
 
 @app.route('/create', methods=['GET', 'POST'])
 def create():
@@ -19,11 +32,21 @@ def create():
         description_value = request.form['description']
 
         # Здесь вы можете добавить код для сохранения в базу данных, если необходимо
+        new_request = Request(
+            request_type=type_value,
+            author=author_value,
+            deadline_date=deadline_value,
+            status=status_value,
+            description=description_value
+        )
+        db.session.add(new_request)
+        db.session.commit()
 
         # После сохранения, перенаправляем на страницу индекса
         return redirect(url_for('main_index'))
 
     return render_template('create.html')
+
 
 @app.route('/edit', methods=['GET', 'POST'])
 def edit():
