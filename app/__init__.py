@@ -61,11 +61,7 @@ def edit():
 
 @app.route('/')
 def main_index():
-    # Получаем данные для отображения на странице
-    requests_data = [
-        {"request_type": "Тип 1", "author": "Автор 1", "deadline_date": "01-01-2023", "status": "Отправлена", "description": "Описание 1"},
-        {"request_type": "Тип 2", "author": "Автор 2", "deadline_date": "02-01-2023", "status": "Принята", "description": "Описание 2"},
-        {"request_type": "Тип 3", "author": "Автор 3", "deadline_date": "03-01-2023", "status": "Выполнена", "description": "Описание 3"},
-    ]
+    # Получаем данные для отображения на странице из базы данных
+    requests_data = Request.query.all()
 
     return render_template('index.html', requests=requests_data)
