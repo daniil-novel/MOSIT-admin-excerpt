@@ -55,7 +55,7 @@ def authorize():
         email = request.form['email']
         password = request.form['password']  # Добавим поле для ввода пароля
 
-        user = Users.query.filter_by(email=email).first()
+        user = User.query.filter_by(email=email).first()
 
         if user and user.check_password(password):
             login_user(user)

@@ -53,7 +53,7 @@ def authorize():
         password = request.form['password']
 
         # Проверяем, есть ли пользователь с таким email в базе данных
-        user = Users.query.filter_by(email=email).first()
+        user = User.query.filter_by(email=email).first()
 
         if user and bcrypt.check_password_hash(user.password, password):
             # Пользователь найден - производим авторизацию
