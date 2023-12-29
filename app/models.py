@@ -1,5 +1,6 @@
 # app/models.py
 from app import db
+from app import bcrypt  # Импортируем объект bcrypt
 
 class Request(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -12,10 +13,17 @@ class Request(db.Model):
     def __repr__(self):
         return f"Request('{self.request_type}', '{self.author}', '{self.deadline_date}', '{self.status}', '{self.description}')"
 
-class User(db.Model):
+class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
+    password = db.Column(db.String(60), nullable=False)  # Добавим поле для хранения хэшированных паролей
     email = db.Column(db.String(120), unique=True, nullable=False)
-    username = db.Column(db.String(50), unique=True, nullable=False)
 
     def __repr__(self):
-        return f"User('{self.email}', '{self.username}')"
+        return f"User('{self.email}', '{self.password}')"
+    
+    def __init__(self, email, password):
+        self.email = email
+        self.password = bcrypt.generate_password_hash(password).decode('utf-8')  # Хэшируем пароль при создании пользователя
+
+    def check_password(self, password):
+        return bcrypt.check_password_hash(self.password, password)

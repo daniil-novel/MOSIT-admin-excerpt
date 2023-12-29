@@ -3,6 +3,7 @@ from flask import Flask, render_template, redirect, url_for, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask_bcrypt import Bcrypt  # Добавим импорт для Flask-Bcrypt
 from flask import flash
 
 app = Flask(__name__)
@@ -12,6 +13,8 @@ app.config['SECRET_KEY'] = 'mirea_kaf_mosit_mosit'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'  # База данных для заявок
 app.config['SQLALCHEMY_BINDS'] = {'users': 'sqlite:///users.db'}  # База данных для пользователей
 db = SQLAlchemy(app)
+
+bcrypt = Bcrypt(app)  # Инициализация Flask-Bcrypt
 
 login_manager = LoginManager(app)
 login_manager.login_view = 'authorize'
@@ -32,16 +35,36 @@ class User(db.Model, UserMixin):
     __bind_key__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    username = db.Column(db.String(50), unique=True, nullable=False)
+    password = db.Column(db.String(255), nullable=False)
 
     def __repr__(self):
-        return f"User('{self.email}', '{self.username}')"
+        return f"User('{self.email}', '{self.password}')"
 
 
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
 
+# Ваш код Flask, где происходит обращение к базе данных
+@app.route('/authorize', methods=['GET', 'POST'])
+def authorize():
+    if request.method == 'POST':
+        email = request.form['email']
+        password = request.form['password']
+
+        # Проверяем, есть ли пользователь с таким email в базе данных
+        user = Users.query.filter_by(email=email).first()
+
+        if user and bcrypt.check_password_hash(user.password, password):
+            # Пользователь найден - производим авторизацию
+            login_user(user)
+            flash('Успешная авторизация!', 'success')
+            return redirect(url_for('main_index'))
+        else:
+            # Пользователь не найден - выводим сообщение об ошибке
+            flash('Неверные учетные данные. Попробуйте еще раз.', 'danger')
+
+    return render_template('authorize.html')
 
 @app.route('/create', methods=['GET', 'POST'])
 def create():
@@ -86,30 +109,6 @@ def edit():
 @login_required
 def main_index():
     return render_template('index.html', requests=requests_data)
-
-
-# Новая функция для страницы авторизации
-@app.route('/authorize', methods=['GET', 'POST'])
-def authorize():
-    if request.method == 'POST':
-        email = request.form['email']
-
-        print(f"Received email: {email}")
-
-        # Проверяем, есть ли пользователь с таким email в базе данных
-        user = User.query.filter_by(email=email).first()
-
-        if user:
-            # Пользователь найден - производим авторизацию
-            login_user(user)
-            flash('Успешная авторизация!', 'success')
-            return redirect(url_for('main_index'))
-        else:
-            # Пользователь не найден - выводим сообщение об ошибке
-            flash('Неверные учетные данные. Попробуйте еще раз.', 'danger')
-
-    return render_template('authorize.html')
-
 
 @app.route('/logout')
 @login_required

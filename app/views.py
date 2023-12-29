@@ -2,6 +2,7 @@
 from flask import render_template, request, redirect, url_for
 from app import app, db
 from app.models import Request, User
+from flask_login import login_user, logout_user, login_required, current_user
 
 
 @app.route('/')
@@ -52,13 +53,15 @@ def edit(id):
 def authorize():
     if request.method == 'POST':
         email = request.form['email']
-        username = request.form['username']
+        password = request.form['password']  # Добавим поле для ввода пароля
 
-        # Проверяем, существует ли пользователь в базе данных
-        user = User.query.filter_by(email=email, username=username).first()
+        user = Users.query.filter_by(email=email).first()
 
-        if user:
-            # Пользователь существует, перенаправляем на главную страницу
+        if user and user.check_password(password):
+            login_user(user)
+            flash('Успешная авторизация!', 'success')
             return redirect(url_for('main_index'))
+        else:
+            flash('Неверные учетные данные. Попробуйте еще раз.', 'danger')
 
     return render_template('authorize.html')
