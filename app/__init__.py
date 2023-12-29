@@ -1,29 +1,51 @@
 # app/__init__.py
 from flask import Flask, render_template, redirect, url_for, request
 from flask_sqlalchemy import SQLAlchemy
+from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
+from werkzeug.security import generate_password_hash, check_password_hash
+from flask import flash
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'  # Используйте свой URI для базы данных
+
+app.config['SECRET_KEY'] = 'mirea_kaf_mosit_mosit'
+
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'  # База данных для заявок
+app.config['SQLALCHEMY_BINDS'] = {'users': 'sqlite:///users.db'}  # База данных для пользователей
 db = SQLAlchemy(app)
 
-# Модель для базы данных
+login_manager = LoginManager(app)
+login_manager.login_view = 'authorize'
+
+
+# Модель для базы данных заявок
 class Request(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     request_type = db.Column(db.String(50), nullable=False)
     author = db.Column(db.String(50), nullable=False)
     deadline_date = db.Column(db.String(10), nullable=False)
     status = db.Column(db.String(20), nullable=False)
-    description = db.Column(db.Text, nullable=True)  # Добавлено поле для описания
+    description = db.Column(db.Text, nullable=True)
 
-# Добавим вывод в консоль при создании базы данных
-with app.app_context():
-    db.create_all()
-    print("База данных успешно создана!")
+
+# Модель для базы данных пользователей
+class User(db.Model, UserMixin):
+    __bind_key__ = 'users'
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    username = db.Column(db.String(50), unique=True, nullable=False)
+
+    def __repr__(self):
+        return f"User('{self.email}', '{self.username}')"
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
 
 @app.route('/create', methods=['GET', 'POST'])
 def create():
     if request.method == 'POST':
-        
         # Получаем данные из формы
         type_value = request.form['type']
         author_value = request.form['author']
@@ -59,9 +81,39 @@ def edit():
     return render_template('edit.html')
 
 
+# Обновляем main_index для перенаправления на index.html после успешной авторизации
 @app.route('/')
+@login_required
 def main_index():
-    # Получаем данные для отображения на странице из базы данных
-    requests_data = Request.query.all()
-
     return render_template('index.html', requests=requests_data)
+
+
+# Новая функция для страницы авторизации
+@app.route('/authorize', methods=['GET', 'POST'])
+def authorize():
+    if request.method == 'POST':
+        email = request.form['email']
+
+        print(f"Received email: {email}")
+
+        # Проверяем, есть ли пользователь с таким email в базе данных
+        user = User.query.filter_by(email=email).first()
+
+        if user:
+            # Пользователь найден - производим авторизацию
+            login_user(user)
+            flash('Успешная авторизация!', 'success')
+            return redirect(url_for('main_index'))
+        else:
+            # Пользователь не найден - выводим сообщение об ошибке
+            flash('Неверные учетные данные. Попробуйте еще раз.', 'danger')
+
+    return render_template('authorize.html')
+
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    flash('Вы успешно вышли из системы.', 'info')
+    return redirect(url_for('authorize'))

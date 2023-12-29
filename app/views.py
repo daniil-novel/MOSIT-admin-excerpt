@@ -1,7 +1,7 @@
 # app/views.py
 from flask import render_template, request, redirect, url_for
 from app import app, db
-from app.models import Request
+from app.models import Request, User
 
 
 @app.route('/')
@@ -47,3 +47,18 @@ def edit(id):
         return redirect(url_for('index'))
 
     return render_template('edit.html', request=req_to_edit)
+
+@app.route('/authorize', methods=['GET', 'POST'])
+def authorize():
+    if request.method == 'POST':
+        email = request.form['email']
+        username = request.form['username']
+
+        # Проверяем, существует ли пользователь в базе данных
+        user = User.query.filter_by(email=email, username=username).first()
+
+        if user:
+            # Пользователь существует, перенаправляем на главную страницу
+            return redirect(url_for('main_index'))
+
+    return render_template('authorize.html')
