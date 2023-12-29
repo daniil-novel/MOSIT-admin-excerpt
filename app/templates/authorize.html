@@ -1,34 +1,79 @@
 <!-- app/templates/authorize.html -->
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Авторизация</title>
     <link
       rel="stylesheet"
-      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+      integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+      crossorigin="anonymous"
     />
   </head>
   <body>
-    <div class="container mt-4">
-      <h1>Авторизация</h1>
-      {% with messages = get_flashed_messages() %} {% if messages %}
-      <div class="alert alert-{{ messages[0].category }}">
-        {{ messages[0] }}
+    <div class="container">
+      <h2 class="mt-5">Авторизация</h2>
+
+      {% with messages = get_flashed_messages(with_categories=true) %} {% if
+      messages %} {% for category, message in messages %}
+      <div
+        class="alert alert-{{ category }} alert-dismissible fade show"
+        role="alert"
+      >
+        {{ message }}
+        <button
+          type="button"
+          class="close"
+          data-dismiss="alert"
+          aria-label="Close"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
       </div>
-      {% endif %} {% endwith %}
-      <form method="post" action="{{ url_for('authorize') }}">
+      {% endfor %} {% endif %} {% endwith %}
+
+      <form method="POST" action="{{ url_for('authorize') }}" class="mt-4">
         <div class="form-group">
-          <label for="email">Почта (@mirea.ru):</label>
-          <input type="email" name="email" class="form-control" required />
+          <label for="email">Email:</label>
+          <input
+            type="email"
+            class="form-control"
+            id="email"
+            name="email"
+            required
+          />
         </div>
         <div class="form-group">
-          <label for="username">Имя пользователя:</label>
-          <input type="text" name="username" class="form-control" required />
+          <label for="password">Password:</label>
+          <input
+            type="password"
+            class="form-control"
+            id="password"
+            name="password"
+            required
+          />
         </div>
         <button type="submit" class="btn btn-primary">Войти</button>
       </form>
     </div>
+
+    <script
+      src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+      integrity="sha384-J6qa4849N9dCkFJm1g7VrakfPboZUUR3NYeD9eg12Yaad4tU5FJAwg+Yd8CD/Dl"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"
+      integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXz1ibbUoWELAht9X1gxIMnWnIDjOsNtFZw"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+      integrity="sha384-JHjINlG3DqLXJzRTg+dlG6EkfxU6MBoiKQ5doaSh/dGct4e/MT5z0I8hkm4I2Lk"
+      crossorigin="anonymous"
+    ></script>
   </body>
 </html>
