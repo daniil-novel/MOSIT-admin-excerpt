@@ -10,11 +10,12 @@ def index():
     requests = Request.query.all()
     return render_template('index.html', requests=requests)
 
-@app.route('/user_profile', methods=['GET', 'POST'])
-def user_profile():
-    return render_template("user_profile.html")
+@app.route('/profile')
+def profile():
+    return render_template("profile.html")
+    #return redirect(url_for('user_profile.html'))
 
-@app.route('/create', )
+@app.route('/create')
 def create():
     if request.method == 'POST':
         request_type = request.form['request_type']

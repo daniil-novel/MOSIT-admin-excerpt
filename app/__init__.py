@@ -102,6 +102,10 @@ def edit():
     # Если GET-запрос, просто отображаем форму редактирования
     return render_template('edit.html')
 
+@app.route('/profile')
+def profile():
+    return render_template("profile.html")
+    #return redirect(url_for('user_profile.html'))
 
 # Обновляем main_index для перенаправления на index.html после успешной авторизации
 @app.route('/')
