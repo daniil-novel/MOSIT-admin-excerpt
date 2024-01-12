@@ -16,6 +16,7 @@
     />
   </head>
   <body>
+    <a href="/profile.html" class="btn btn-info" text-align="right">Profile</a>
     <div class="container mt-4">
       <h1>Управление Заявками</h1>
       <table class="table">
@@ -57,9 +58,7 @@
           {% endfor %}
         </tbody>
       </table>
-      <a href="{{ url_for('create') }}" class="btn btn-primary"
-        >Создать Заявку</a
-      >
+      <a href="/create" class="btn btn-primary">Создать Заявку</a>
     </div>
   </body>
 </html>

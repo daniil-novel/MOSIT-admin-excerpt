@@ -1,16 +1,20 @@
 # app/views.py
-from flask import render_template, request, redirect, url_for
+from flask import flash, render_template, request, redirect, url_for
 from app import app, db
 from app.models import Request, User
 from flask_login import login_user, logout_user, login_required, current_user
 
 
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def index():
     requests = Request.query.all()
     return render_template('index.html', requests=requests)
 
-@app.route('/create', methods=['GET', 'POST'])
+@app.route('/user_profile', methods=['GET', 'POST'])
+def user_profile():
+    return render_template("user_profile.html")
+
+@app.route('/create', )
 def create():
     if request.method == 'POST':
         request_type = request.form['request_type']
@@ -65,3 +69,4 @@ def authorize():
             flash('Неверные учетные данные. Попробуйте еще раз.', 'danger')
 
     return render_template('authorize.html')
+

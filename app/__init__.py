@@ -12,6 +12,7 @@ app.config['SECRET_KEY'] = 'mirea_kaf_mosit_mosit'
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'  # База данных для заявок
 app.config['SQLALCHEMY_BINDS'] = {'users': 'sqlite:///users.db'}  # База данных для пользователей
+app.config['SQLAlCHEMY_TRAC_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
 bcrypt = Bcrypt(app)  # Инициализация Flask-Bcrypt
