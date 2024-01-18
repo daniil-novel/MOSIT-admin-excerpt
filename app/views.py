@@ -3,7 +3,18 @@ from flask import flash, render_template, request, redirect, url_for
 from app import app, db, login_manager
 from app.models import Request, User
 from flask_login import login_user, logout_user, login_required, current_user
+import os
+from werkzeug.utils import secure_filename
 
+
+UPLOAD_FOLDER = 'uploads'
+ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
+
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 @app.route('/', methods=['GET', 'POST'])
 @login_required
@@ -27,13 +38,32 @@ def create():
         status_value = request.form['status']
         description_value = request.form['description']
 
-        # Здесь вы можете добавить код для сохранения в базу данных, если необходимо
+        # Обработка файла
+        if 'attachment' not in request.files:
+            flash('Файл не выбран', 'danger')
+            return redirect(request.url)
+
+        file = request.files['attachment']
+
+        if file.filename == '':
+            flash('Файл не выбран', 'danger')
+            return redirect(request.url)
+
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        else:
+            flash('Недопустимый формат файла', 'danger')
+            return redirect(request.url)
+
+        # Cохранение в базу данных
         new_request = Request(
             request_type=type_value,
             author=author_value,
             deadline_date=deadline_value,
             status=status_value,
-            description=description_value
+            description=description_value,
+            attachment=filename
         )
         db.session.add(new_request)
         db.session.commit()

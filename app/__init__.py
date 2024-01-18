@@ -4,7 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from flask_bcrypt import Bcrypt
 from flask import flash
-
+import os
 
 app = Flask(__name__)
 
@@ -20,5 +20,10 @@ bcrypt = Bcrypt(app)
 login_manager = LoginManager(app)
 login_manager.init_app(app)
 login_manager.login_view = 'authorize'
+
+# Путь к папке загрузок
+app.config['UPLOAD_FOLDER'] = 'uploads'
+# Абсолютный путь к папке загрузок
+app.config['UPLOAD_FOLDER_PATH'] = os.path.join(os.getcwd(), app.config['UPLOAD_FOLDER'])
 
 from app import views  # Импортируем views после инициализации app и db
