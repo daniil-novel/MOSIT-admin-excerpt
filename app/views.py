@@ -78,12 +78,50 @@ def create():
 @login_required
 def edit():
     if request.method == 'POST':
-        # Обработка данных из формы редактирования
-        # В данном случае, мы пока не сохраняем данные, а просто отображаем их в форме
-        return render_template('edit.html', **request.form)
+        # Используем метод get() для избежания ошибки, если 'request_id' отсутствует в запросе
+        request_id = request.form.get('request_id')
+        deadline_value = request.form.get('deadline')
+        status_value = request.form.get('status')
+        description_value = request.form.get('description')
+
+        if request_id is None:
+            flash('Не удалось получить идентификатор заявки', 'danger')
+            return redirect(url_for('index'))
+
+        # Обработка файла
+        if 'attachment' in request.files:
+            file = request.files['attachment']
+            if file.filename != '' and allowed_file(file.filename):
+                filename = secure_filename(file.filename)
+                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            else:
+                flash('Недопустимый формат файла', 'danger')
+                return redirect(request.url)
+        else:
+            filename = None  # Оставляем текущий файл без изменений
+
+        # Обновление данных в базе данных
+        request_data = Request.query.get(request_id)
+
+        # Проверяем, найдена ли запись
+        if request_data is None:
+            flash('Заявка с указанным идентификатором не найдена', 'danger')
+            return redirect(url_for('index'))
+
+        request_data.deadline_date = deadline_value
+        request_data.status = status_value
+        request_data.description = description_value
+
+        if filename:
+            request_data.attachment = filename  # Обновление имени файла, если загружен новый файл
+
+        db.session.commit()
+
+        # Перенаправление на страницу индекса
+        return redirect(url_for('index'))
 
     # Если GET-запрос, просто отображаем форму редактирования
-    return render_template('edit.html')
+    return render_template('edit.html', **request.form)
 
 
 @app.route('/authorize', methods=['GET', 'POST'])
