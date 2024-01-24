@@ -42,3 +42,19 @@ class User(db.Model, UserMixin):
     
     def update_password(self, new_password):
         self.password = self.generate_password_hash(new_password)
+
+"""
+class UserInfo(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    position = db.Column(db.String(120))
+    birth_date = db.Column(db.Date)
+    rank = db.Column(db.String(120))
+    education = db.Column(db.String(120))
+    user_fio = db.Column(db.String(120), db.ForeignKey('user.fio'), unique=True, nullable=False)
+    user = db.relationship('User', backref=db.backref('user_info', uselist=False))
+
+     def __repr__(self):
+        return f"UserInfo('{self.user_fio}', '{self.position}', '{self.birth_date}', '{self.rank}', '{self.education}')"
+
+        
+"""

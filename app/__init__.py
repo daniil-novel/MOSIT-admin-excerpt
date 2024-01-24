@@ -26,4 +26,5 @@ app.config['UPLOAD_FOLDER'] = 'uploads'
 # Абсолютный путь к папке загрузок
 app.config['UPLOAD_FOLDER_PATH'] = os.path.join(os.getcwd(), app.config['UPLOAD_FOLDER'])
 
+
 from app import views  # Импортируем views после инициализации app и db

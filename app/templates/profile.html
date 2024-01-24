@@ -22,23 +22,23 @@
         <tbody>
           <tr>
             <td>Должность</td>
-            <td>---</td>
+            <td>{{ user_info.position or '---' }}</td>
           </tr>
           <tr>
             <td>ФИО</td>
-            <td>---</td>
+            <td>{{ user_info.fio or '---' }}</td>
           </tr>
           <tr>
             <td>Дата рождения</td>
-            <td>---</td>
+            <td>{{ user_info.birth_date or '---' }}</td>
           </tr>
           <tr>
             <td>Степень звания</td>
-            <td>---</td>
+            <td>{{ user_info.rank or '---' }}</td>
           </tr>
           <tr>
             <td>Образование</td>
-            <td>---</td>
+            <td>{{ user_info.education or '---' }}</td>
           </tr>
         </tbody>
       </table>

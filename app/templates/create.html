@@ -53,11 +53,14 @@
         </div>
         <div class="form-group">
           <label for="status">Статус</label>
-          <select class="form-control" id="status" name="status" required>
-            <option value="Отправлена">Отправлена</option>
-            <option value="Принята">Принята</option>
-            <option value="Выполнена">Выполнена</option>
-          </select>
+          <input
+            type="text"
+            class="form-control"
+            id="status"
+            name="status"
+            value="Отправлена"
+            readonly
+          />
         </div>
         <div class="form-group">
           <label for="description">Описание</label>
