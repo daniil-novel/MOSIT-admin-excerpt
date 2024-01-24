@@ -130,9 +130,9 @@ def authorize():
         email = request.form['email']
         password = request.form['password']
 
-        user = User.query.filter_by(email=email).first()
+        user = User.query.filter_by(email=email).first() # Представляем email в качестве юзера, который заходит на сайт
 
-        if user:
+        if user and user.check_password(password):
             login_user(user)
             flash('Успешная авторизация!', 'success')
             return redirect(url_for('main_index'))
@@ -156,5 +156,12 @@ def logout():
 @app.route('/')
 @login_required
 def main_index():
-    requests_data = Request.query.all()  # Получаем все записи из таблицы Request
+    if current_user.is_authenticated and current_user.email == 'zhenya@gmail.com':
+        # Если пользователь аутентифицирован и его email равен 'zhenya@gmail.com',
+        # отображаем все заявки
+        requests_data = Request.query.all()
+    else:
+        # Иначе, отображаем только заявки текущего пользователя
+        requests_data = Request.query.filter_by(author=current_user.email).all()
+
     return render_template('index.html', requests=requests_data)
