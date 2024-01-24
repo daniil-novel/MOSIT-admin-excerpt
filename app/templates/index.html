@@ -19,6 +19,9 @@
     <a href="/profile" class="btn btn-info" text-align="right">Профиль</a>
     <div class="container mt-4">
       <h1>Управление Заявками</h1>
+      {% if user_email %}
+      <p>Вы вошли как: {{ user_email }}</p>
+      {% endif %}
       <table class="table">
         <thead>
           <tr>

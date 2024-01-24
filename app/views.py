@@ -135,7 +135,8 @@ def authorize():
         if user and user.check_password(password):
             login_user(user)
             flash('Успешная авторизация!', 'success')
-            return redirect(url_for('main_index'))
+
+            return redirect(url_for('main_index', user_email=email))
         else:
             flash('Неверные учетные данные. Попробуйте еще раз.', 'danger')
 
@@ -146,7 +147,7 @@ def load_user(user_id):
     return User.query.get(int(user_id))
 
 
-@app.route('/logout')
+@app.route('/logout', methods=['POST'])
 @login_required
 def logout():
     logout_user()
@@ -156,12 +157,12 @@ def logout():
 @app.route('/')
 @login_required
 def main_index():
-    if current_user.is_authenticated and current_user.email == 'zhenya@gmail.com':
-        # Если пользователь аутентифицирован и его email равен 'zhenya@gmail.com',
-        # отображаем все заявки
+    if current_user.email == 'zhenya@gmail.com':
+        # Если текущий пользователь с почтой zhenya@gmail.com, показываем все заявки
         requests_data = Request.query.all()
     else:
-        # Иначе, отображаем только заявки текущего пользователя
-        requests_data = Request.query.filter_by(author=current_user.email).all()
+        # Иначе (для других пользователей), показываем только их собственные заявки
+        requests_data = Request.query.filter(Request.author == current_user.fio).all()
 
-    return render_template('index.html', requests=requests_data)
+
+    return render_template('index.html', requests=requests_data, user_email=current_user.email)
