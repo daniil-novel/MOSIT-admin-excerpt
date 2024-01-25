@@ -72,20 +72,28 @@ def create():
 
     return render_template('create.html')
 
-
-@app.route('/edit', methods=['GET', 'POST'])
+@app.route('/delete/<int:request_id>', methods=['GET', 'POST'])
 @login_required
-def edit():
-    if request.method == 'POST':
-        # Используем метод get() для избежания ошибки, если 'request_id' отсутствует в запросе
-        request_id = request.form.get('request_id')
-        deadline_value = request.form.get('deadline')
-        status_value = request.form.get('status')
-        description_value = request.form.get('description')
+def delete(request_id):
+    article = Request.query.get_or_404(request_id)
+    try:
+        db.session.delete(article)
+        db.session.commit()
+        return redirect(url_for('index'))
+    except:
+        return "Ошибка удаления"
+    
 
-        if request_id is None:
-            flash('Не удалось получить идентификатор заявки', 'danger')
-            return redirect(url_for('index'))
+@app.route('/edit/<int:request_id>', methods=['GET', 'POST'])
+@login_required
+def edit(request_id):
+    article = Request.query.get(request_id)
+    if request.method == 'POST':
+        if 'deadline' in request.form:
+            article.deadline_date = request.form['deadline']
+        article.status = "Отредактирована"
+        if 'description' in request.form:
+            article.description = request.form['description']
 
         # Обработка файла
         if 'attachment' in request.files:
@@ -99,29 +107,17 @@ def edit():
         else:
             filename = None  # Оставляем текущий файл без изменений
 
-        # Обновление данных в базе данных
-        request_data = Request.query.get(request_id)
-
-        # Проверяем, найдена ли запись
-        if request_data is None:
-            flash('Заявка с указанным идентификатором не найдена', 'danger')
-            return redirect(url_for('index'))
-
-        request_data.deadline_date = deadline_value
-        request_data.status = status_value
-        request_data.description = description_value
-
         if filename:
-            request_data.attachment = filename  # Обновление имени файла, если загружен новый файл
-
-        db.session.commit()
-
-        # Перенаправление на страницу индекса
-        return redirect(url_for('index'))
-
-    # Если GET-запрос, просто отображаем форму редактирования
-    return render_template('edit.html', **request.form)
-
+            article.attachment = filename  # Обновление имени файла, если загружен новый файл
+        
+        try:
+            db.session.commit()
+            return redirect(url_for('index'))
+        except:
+            return "Ошибка редактирования"
+    else:
+        # Если GET-запрос, просто отображаем форму редактирования
+        return render_template('edit.html', request_id=request_id, **request.form)
 """
 @app.route('/profile')
 @login_required
