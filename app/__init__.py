@@ -11,8 +11,8 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'mirea_kaf_mosit_mosit'
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
-app.config['SQLALCHEMY_BINDS'] = {'users': 'sqlite:///users.db'}
-app.config['SQLAlCHEMY_TRAC_MODIFICATIONS'] = False
+app.config['SQLALCHEMY_BINDS'] = {'users': 'sqlite:///users.db', 'user_info': 'sqlite:///user_info.db'}
+app.config['SQLAlCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
 bcrypt = Bcrypt(app)

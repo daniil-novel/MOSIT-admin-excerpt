@@ -1,7 +1,7 @@
 # app/views.py
 from flask import flash, render_template, request, redirect, url_for
 from app import app, db, login_manager
-from app.models import Request, User #добавить UserInfo по готовности
+from app.models import Request, User, UserInfo #добавить UserInfo по готовности
 from flask_login import login_user, logout_user, login_required, current_user
 import os
 from werkzeug.utils import secure_filename
@@ -21,10 +21,6 @@ def allowed_file(filename):
 def index():
     requests = Request.query.all()
     return render_template('index.html', requests=requests)
-
-@app.route('/user_profile')
-def user_profile():
-    return render_template("profile.html")
 
 @app.route('/create', methods=['GET', 'POST'])
 @login_required
@@ -113,13 +109,11 @@ def edit(request_id):
         # Если GET-запрос, просто отображаем форму редактирования
         return render_template('edit.html', request_id=request_id, article=article)
     
-"""
 @app.route('/profile')
 @login_required
 def profile():
-    user_info = UserInfo.query.filter_by(user_id=current_user.id).first()
-    return render_template("profile.html", user_info=user_info)
-"""
+    user_info = UserInfo.query.filter_by(email=current_user.email).first()
+    return render_template('profile.html', user_info=user_info)
 
 @app.route('/authorize', methods=['GET', 'POST'])
 def authorize():
