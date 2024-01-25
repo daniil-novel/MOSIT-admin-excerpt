@@ -91,7 +91,8 @@ def edit(request_id):
     if request.method == 'POST':
         if 'deadline' in request.form:
             article.deadline_date = request.form['deadline']
-        article.status = "Отредактирована"
+        if 'status' in request.form:
+            article.status = request.form['status']
         if 'description' in request.form:
             article.description = request.form['description']
 
@@ -101,15 +102,8 @@ def edit(request_id):
             if file.filename != '' and allowed_file(file.filename):
                 filename = secure_filename(file.filename)
                 file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            else:
-                flash('Недопустимый формат файла', 'danger')
-                return redirect(request.url)
-        else:
-            filename = None  # Оставляем текущий файл без изменений
+                article.attachment = filename  # Обновление имени файла, если загружен новый файл
 
-        if filename:
-            article.attachment = filename  # Обновление имени файла, если загружен новый файл
-        
         try:
             db.session.commit()
             return redirect(url_for('index'))
@@ -117,7 +111,8 @@ def edit(request_id):
             return "Ошибка редактирования"
     else:
         # Если GET-запрос, просто отображаем форму редактирования
-        return render_template('edit.html', request_id=request_id, **request.form)
+        return render_template('edit.html', request_id=request_id, article=article)
+    
 """
 @app.route('/profile')
 @login_required

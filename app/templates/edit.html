@@ -15,27 +15,27 @@
             <input type="hidden" name="request_id" value="{{ request_id }}">
             <div class="form-group">
                 <label for="type">Тип выписки</label>
-                <input type="text" class="form-control" id="type" placeholder="Текущий тип выписки" value="{{ request_type }}" readonly>
+                <input type="text" class="form-control" id="type" placeholder="Текущий тип выписки" value="{{ article.request_type }}" readonly>
             </div>
             <div class="form-group">
                 <label for="author">Автор</label>
-                <input type="text" class="form-control" id="author" placeholder="Текущий автор" value="{{ author }}" readonly>
+                <input type="text" class="form-control" id="author" placeholder="Текущий автор" value="{{ article.author }}" readonly>
             </div>
             <div class="form-group">
                 <label for="deadline">Дата истечения дедлайна</label>
-                <input type="date" class="form-control" id="deadline" value="{{ deadline_date }}" required>
+                <input type="date" class="form-control" id="deadline" name="deadline" value="{{ article.deadline_date }}" required>
             </div>
             <div class="form-group">
                 <label for="status">Статус</label>
-                <select class="form-control" id="status" required>
-                    <option value="Отправлена" {% if status == 'Отправлена' %}selected{% endif %}>Отправлена</option>
-                    <option value="Принята" {% if status == 'Принята' %}selected{% endif %}>Принята</option>
-                    <option value="Выполнена" {% if status == 'Выполнена' %}selected{% endif %}>Выполнена</option>
+                <select class="form-control" id="status" name="status" required>
+                    <option value="Отправлена" {% if article.status == 'Отправлена' %}selected{% endif %}>Отправлена</option>
+                    <option value="Принята" {% if article.status == 'Принята' %}selected{% endif %}>Принята</option>
+                    <option value="Выполнена" {% if article.status == 'Выполнена' %}selected{% endif %}>Выполнена</option>
                 </select>
             </div>
             <div class="form-group">
                 <label for="description">Описание</label>
-                <textarea class="form-control" id="description" rows="4" placeholder="Введите описание">{{ description }}</textarea>
+                <textarea class="form-control" id="description" name="description" rows="4" placeholder="Введите описание">{{ article.description }}</textarea>
             </div>
             <div class="form-group">
                 <label for="attachment">Вложение</label>
