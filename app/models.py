@@ -45,6 +45,7 @@ class User(db.Model, UserMixin):
 
 
 class UserInfo(db.Model):
+    __bind_key__ = 'user_info'
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(120), unique=True, nullable=False)
     fio = db.Column(db.String(100), nullable=False)

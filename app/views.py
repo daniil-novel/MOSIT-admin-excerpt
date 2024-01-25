@@ -2,6 +2,7 @@
 from flask import flash, render_template, request, redirect, url_for
 from app import app, db, login_manager
 from app.models import Request, User, UserInfo #добавить UserInfo по готовности
+from datetime import datetime
 from flask_login import login_user, logout_user, login_required, current_user
 import os
 from werkzeug.utils import secure_filename
@@ -113,7 +114,15 @@ def edit(request_id):
 @login_required
 def profile():
     user_info = UserInfo.query.filter_by(email=current_user.email).first()
-    return render_template('profile.html', user_info=user_info)
+    
+    # Проверяем, есть ли информация о пользователе
+    if user_info:
+        # Преобразуем дату в строку в нужном формате
+        birth_date_str = user_info.birth_date.strftime('%Y.%m.%d')
+    else:
+        birth_date_str = None
+    
+    return render_template('profile.html', user_info=user_info, birth_date_str=birth_date_str)
 
 @app.route('/authorize', methods=['GET', 'POST'])
 def authorize():
